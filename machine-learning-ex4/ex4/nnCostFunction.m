@@ -62,15 +62,53 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+% part 1.1: feedforward
+a1 = [ones(m, 1) X];
+z2 = (a1 * Theta1');
+a2 = sigmoid(z2);
+a2 = [ones(m, 1) a2];
+z3 = (a2 * Theta2');
+a3 = sigmoid(z3);
 
+% part 1.2: cost function (with transformed y)
+new_y = eye(num_labels)(y,:);
+J = (1 / m) * sum(sum(-new_y .* log(a3) - (1 - new_y) .* log(1 - a3)));
+J += (lambda / (2 * m)) * (sum(sum(Theta1(:,2:end) .^ 2)) + sum(sum(Theta2(:,2:end) .^ 2)));
 
+% part 2: back-propagation
+D1 = 0;
+D2 = 0;
+for t = 1:m
+  % 2.3.1: perform forward-propagation for a single example
+  a_1 = [1 X(t,:)];
+  z_2 = (a_1 * Theta1');
+  a_2 = sigmoid(z_2);
+  a_2 = [1 a_2];
+  z_3 = (a_2 * Theta2');
+  a_3 = sigmoid(z_3);
 
+  % 2.3.2: calculate delta for output layer
+  y_la = eye(num_labels)(y(t,:),:);
+  d_3 = (a_3 - y_la);
 
+  % 2.3.3: calculate delta for hidden layer 2
+  d_2 = (d_3 * Theta2) .* (a_2 .* (1 - a_2));
+  d_2 = d_2(2:end);
 
+  % 2.3.4: accumulate gradients
+  D2 += d_3' * a_2;
+  D1 += d_2' * a_1;
+end
 
+% 2.3.5:
+Theta2_grad_unreg = (1 / m) * D2;
+Theta1_grad_unreg = (1 / m) * D1;
 
+Theta2_grad_reg = (1 / m) * D2 + ((lambda / m) * Theta2);
+Theta1_grad_reg = (1 / m) * D1 + ((lambda / m) * Theta1);
 
-
+Theta2_grad = [ Theta2_grad_unreg(:,1) Theta2_grad_reg(:,2:end) ];
+Theta1_grad = [ Theta1_grad_unreg(:,1) Theta1_grad_reg(:,2:end) ];
 
 
 
