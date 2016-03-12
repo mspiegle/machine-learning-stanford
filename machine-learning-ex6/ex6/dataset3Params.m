@@ -23,11 +23,23 @@ sigma = 0.3;
 %        mean(double(predictions ~= yval))
 %
 
+% function [model] = svmTrain(X, Y, C, kernelFunction, tol, max_passes)
 
+% iterate through combinations of C/sigma and store error
+guesses = [];
+for C_cur = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
+  for sigma_cur = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
+    model = svmTrain(X, y, C_cur, @(x1, x2) gaussianKernel(x1, x2, sigma_cur));
+    predictions = svmPredict(model, Xval);
+    pred_error = mean(double(predictions ~= yval));
+    guesses = [guesses; C_cur sigma_cur pred_error];
+  end
+end
 
-
-
-
+% find C/sigma with lowest error
+[lowest, index] = min(guesses(:, 3));
+C = guesses(index, 1);
+sigma = guesses(index, 2);
 
 % =========================================================================
 
