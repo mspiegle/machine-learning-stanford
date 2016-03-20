@@ -21,9 +21,19 @@ idx = zeros(size(X,1), 1);
 % Note: You can use a for-loop over the examples to compute this.
 %
 
+numExamples = rows(X);
+numCentroids = rows(centroids);
+for x = 1:numExamples
+  % find distance to each centroid, store in minC
+  minC = [];
+  for c = 1:numCentroids
+    minC(c) = norm(X(x,:) - centroids(c, :));
+  end
 
-
-
+  % find the centroid w/ minimum distance
+  [value, index] = min(minC);
+  idx(x) = index;
+end
 
 
 
