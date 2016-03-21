@@ -25,9 +25,14 @@ centroids = zeros(K, n);
 %
 % Note: You can use a for-loop over the centroids to compute this.
 %
-
-
-
+% find the examples for each centroid and compute the mean
+for x = 1:m
+  for c = 1:K
+    examples = X(find(idx == c),:);
+    numExamples = rows(examples);
+    centroids(c,:) = (1 / numExamples) * sum(examples);
+  end
+end
 
 
 
